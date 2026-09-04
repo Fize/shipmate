@@ -41,7 +41,7 @@ These role IDs are semantic identities of the workflow, not platform-specific ag
 
 ```text
 Built-in subagent in current runtime matching role capability probe
-  -> skills/workflow-orchestrator/agents/<role>.md canonical contract
+  -> workflow-orchestrator/agents/<role>.md canonical contract
   -> blocked/escalated
 ```
 

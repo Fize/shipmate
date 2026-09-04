@@ -53,17 +53,17 @@ graph TD
 
 ## 📦 Skill Suite Matrix
 
-All skills reside under the [`skills/`](skills/) directory, featuring independent `SKILL.md` contracts, reference guides (`references/`), and executable scripts (`scripts/`):
+All skills reside directly at the root of the repository, featuring independent `SKILL.md` contracts, reference guides (`references/`), and executable scripts (`scripts/`):
 
-| Skill Name | Layer | Version / Badge | Core Purpose & Scope | Triggers (EN / 中文) |
-|---|---|---|---|---|
-| **[`first-principles`](skills/first-principles/SKILL.md)** | Cognition | `🧠 v1.0.0` | Refuse assumed authority; derive complex systems from fundamental truths into verifiable mental models. | `first principles`, `reverse engineer`, `learn X`, 第一性原理, 探究本质, 逆向分析 |
-| **[`workflow-orchestrator`](skills/workflow-orchestrator/SKILL.md)** | Orchestration | `🧭 v1.0.0` | Coordinate multi-agent delivery, maintaining an immutable 5-state machine ledger and execution flow. | `/workflow-orchestrator`, `deliver feature`, `implement change`, 交付需求, 实现变更 |
-| **[`scenario-standards`](skills/scenario-standards/SKILL.md)** | Standards | `📋 v1.0.0` | Define Greenfield, Feature, Bugfix, Refactor, and Deploy scenario disciplines with strict phase checklists. | `/scenario-standards`, `new project`, `add feature`, `bug fix`, 新增功能, 修复Bug, 重构 |
-| **[`architecture-principles`](skills/architecture-principles/SKILL.md)** | Architecture | `🏛️ v1.0.0` | Apply 11 decision criteria (benefit-first, completeness over performance, etc.) and build-vs-buy frameworks. | `tech selection`, `architecture review`, 技术选型, 架构评审, 自研还是开源 |
-| **[`qa-suite`](skills/qa-suite/SKILL.md)** | Quality | `🛡️ v1.0.0` | Testing strategy, 8 boundary attack categories, failure path matrix, containerized integration, and deterministic gate scripts. | `/qa-suite`, `test strategy`, `write tests`, `run e2e`, 测试策略, 写测试, 回归测试 |
-| **[`coding-tactics`](skills/coding-tactics/SKILL.md)** | Tactics | `⚡ v1.0.0` | Micro-level coding tactics; dynamically select and execute TDD, BDD, API-First, Security-First, or Direct mode. | `/coding-tactics tdd`, `/coding-tactics bdd`, `test first`, 测试先行, 行为驱动 |
-| **[`git-workflow`](skills/git-workflow/SKILL.md)** | Tools | `🌿 v1.0.0` | Staged operation flows, smart staged change splitting, Conventional Commits, and AI author attribution. | `/git-workflow commit`, `/git-workflow push`, `commit`, 提交, 推送, 分支 |
+| Skill Name | Layer | Core Purpose & Scope |
+|---|---|---|
+| **[`first-principles`](first-principles/SKILL.md)** | Cognition | Refuse assumed authority; derive complex systems from fundamental truths into verifiable mental models. |
+| **[`workflow-orchestrator`](workflow-orchestrator/SKILL.md)** | Orchestration | Coordinate multi-agent delivery, maintaining an immutable 5-state machine ledger and execution flow. |
+| **[`scenario-standards`](scenario-standards/SKILL.md)** | Standards | Define Greenfield, Feature, Bugfix, Refactor, and Deploy scenario disciplines with strict phase checklists. |
+| **[`architecture-principles`](architecture-principles/SKILL.md)** | Architecture | Apply 11 decision criteria (benefit-first, completeness over performance, etc.) and build-vs-buy frameworks. |
+| **[`qa-suite`](qa-suite/SKILL.md)** | Quality | Testing strategy, 8 boundary attack categories, failure path matrix, containerized integration, and deterministic gate scripts. |
+| **[`coding-tactics`](coding-tactics/SKILL.md)** | Tactics | Micro-level coding tactics; dynamically select and execute TDD, BDD, API-First, Security-First, or Direct mode. |
+| **[`git-workflow`](git-workflow/SKILL.md)** | Tools | Staged operation flows, smart staged change splitting, Conventional Commits, and AI author attribution. |
 
 ---
 
@@ -80,7 +80,7 @@ active ──► reviewing ──┬─► done
 Every delivery artifact maintains a local JSON audit ledger recording machine-visible subskill routing (`work_item.routing`), independent multi-lens reviews (Security, Correctness, Architecture, Tests, Performance), and comprehensive evidence chains.
 
 ### 2. Deterministic Quality Gates & Decoupled Decisions
-`qa-suite` replaces conversational prompt guidelines with deterministic exit codes via [`validate_qa_gate.py`](skills/qa-suite/scripts/validate_qa_gate.py):
+`qa-suite` replaces conversational prompt guidelines with deterministic exit codes via [`validate_qa_gate.py`](qa-suite/scripts/validate_qa_gate.py):
 - **Planning Integrity**: 100% of feature-category intersections must be assessed; skipped items require documented rationale.
 - **Execution Completeness**: 100% of planned tests must be executed (`planned == executed`).
 - **Zero P0 Tolerance**: Any unresolved P0 defect blocks the quality gate immediately.
@@ -103,45 +103,33 @@ Shipmate includes zero-dependency Python 3 CLI utilities:
 ### 1. Live Workflow Dashboard
 ```bash
 # Start the local real-time workflow dashboard (default port 8765)
-python3 skills/workflow-orchestrator/scripts/serve_workflow.py
+python3 workflow-orchestrator/scripts/serve_workflow.py
 # Access http://127.0.0.1:8765 in your browser to inspect project task swimlanes and QA reports
 ```
 
 ### 2. State Machine & Ledger Validator
 ```bash
 # Run self-check on the 5-state transition table and subskill vocabulary
-python3 skills/workflow-orchestrator/scripts/validate_workflow.py self-check
+python3 workflow-orchestrator/scripts/validate_workflow.py self-check
 
 # Validate a specific task ledger
-python3 skills/workflow-orchestrator/scripts/validate_workflow.py check-ledger <ledger_path.json>
+python3 workflow-orchestrator/scripts/validate_workflow.py check-ledger <ledger_path.json>
 ```
 
 ### 3. Quality Gate Validator
 ```bash
 # Verify the 5 quality gate scenarios via self-check
-python3 skills/qa-suite/scripts/validate_qa_gate.py self-check
+python3 qa-suite/scripts/validate_qa_gate.py self-check
 
 # Validate a QA Report against quality gates
-python3 skills/qa-suite/scripts/validate_qa_gate.py check <qa_report.json>
+python3 qa-suite/scripts/validate_qa_gate.py check <qa_report.json>
 ```
 
 ### 4. First-Principles Document Scaffolder
 ```bash
 # Generate a standard 5-stage first-principles mental model document
-python3 skills/first-principles/scripts/scaffold_doc.py "Async Rust Runtime"
+python3 first-principles/scripts/scaffold_doc.py "Async Rust Runtime"
 ```
-
----
-
-## 🔌 Multi-Agent Runtime Compatibility
-
-Shipmate is built from the ground up for universal agent compatibility, natively supporting any coding agent runtime that implements the open Agent Skills standard:
-
-- **[OpenClaw](https://openclaw.ai) / [ClawHub](https://clawhub.ai)**: Full compliance with OpenClaw v1.0.0 format (`metadata.openclaw`) for automated discovery, dependency validation (`requires.bins`), and ecosystem distribution.
-- **[Claude Code](https://claude.ai/code)**: Native compatibility with progressive disclosure, slash command discovery (`/workflow-orchestrator`, `/qa-suite`, etc.), and tool permission scopes.
-- **[Antigravity](https://antigravity.google) / Gemini CLI**: Direct support for workspace (`skills/`) and global configuration (`~/.gemini/config/skills/`) loading.
-- **[Cursor](https://cursor.com) / Windsurf**: Context-driven rule loading, prompt templates, and repository-level guidance.
-- **[Codex](https://openai.com) / OpenCode**: Runtime-neutral subagent role contracts, deterministic ledger accounting, and autonomous CLI workflows.
 
 ---
 
