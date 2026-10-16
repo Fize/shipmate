@@ -1,5 +1,19 @@
 # Agent Roster (Role Contract Index)
 
+## Profile applicability (schema v2)
+
+These contracts govern actual role dispatches. Light requires no subagents: main implements,
+verifies and checks the diff. Standard uses main implementation/verification/self-check and one
+independent reviewer with the `general` lens, followed by main-agent narrow fixes and a fresh
+review by that same reviewer if needed. It has no evaluator, separate self-reviewer, judge or
+fixer dispatch. Strict retains the full role pipeline below, including evaluator barriers and
+security plus correctness reviews. Unversioned/version 1 code ledgers retain their original
+role pipeline. Statements below about mandatory completion evaluation or adjudication apply
+only to strict and the legacy pipeline, not light/standard. See
+[execution profiles](../references/execution-profiles.md) for the authoritative applicability.
+Every dispatched prompt includes the selected profile and current change revision in its work
+item/routing context. Report references identify that revision; no role may reuse a stale pass.
+
 The files in this directory are **directly dispatchable role contracts**, not design documents. Each file is self-contained: it includes "When to Dispatch / MUST NOT Dispatch", copy-pasteable prompt contracts, required placeholder tables, output contracts, hard constraints, and failure modes. The orchestrator's job is to select a role, populate placeholders, dispatch the complete prompt to a subagent (fanning out in parallel when the matrix permits), and close according to the gates defined in `../SKILL.md`. Roles **do not invoke each other and do not share memory**: all state is transported by the orchestrator between injection and collection. Reading a single file is sufficient to dispatch that role; reading the entire roster upfront is not required.
 
 ## Shared Hard Gate (applies to every role; treat as a prepended clause of every dispatched prompt)
@@ -15,7 +29,7 @@ orchestrator must re-dispatch or escalate:
    - the previous phase produced no valid output;
    - the previous phase's verification evidence is insufficient;
    - the current phase's precondition is unmet (e.g. review requested without a
-     completion-evaluator pass).
+     completion-evaluator pass when strict, or main verification/diff-check when standard).
    - the runtime identity placeholder `{AGENT_NAME}` is missing, empty, or inconsistent with the
      dispatched role, lens, or judge mode.
    Standalone test/debug scripts classified as `L1-standalone-script` do not dispatch a subagent;
@@ -54,7 +68,7 @@ Built-in subagent in current runtime matching role capability probe
 | `implementer` | Write to `{ALLOWED_PATHS}`, run `{VERIFY_COMMANDS}`, return full completion contract/JSON | Generic conversational or read-only agent |
 | `completion-evaluator` | Read actual worktree, verify criteria item-by-item, return strict 9-field JSON | Trusting implementer's self-reported success |
 | `self-reviewer` | Read frozen change set, return P0–P3 self-review report | Unverified high-level code summaries |
-| `independent-reviewer` | Receive single lens, no peer reports, return structured independent review report | Reviewer having visibility into peer findings |
+| `independent-reviewer` | Receive single specialist lens for strict, or general lens for standard; no peer reports; return structured independent review | Reviewer having visibility into peer findings |
 | `review-judge` | Exclusive read of all reports and source code, return strict 4-field JSON adjudication | Trusting reviewer pass or implementer self-eval |
 | `fixer` | Fix only issues explicitly identified by judge, record itemized disposition and verification | Unconstrained coding agent modifying arbitrary code |
 
@@ -99,8 +113,9 @@ The two writing roles (`implementer`, `fixer`) are strictly exclusive by default
 ## Which Role to Pick
 
 - **Need code modifications (clear acceptance criteria)** → `implementer`. If requirements are vague, clarify first.
-- **Implementation done, verify whether requested items are complete** → `completion-evaluator`. Completion gate; work item cannot be marked done without it.
-- **Code changes need quality gating** → `self-reviewer` + `independent-reviewer` × N (fanned out by lens, default `security` + `correctness`), dispatched **concurrently**; pass raw reports to `review-judge` for synthesis.
+- **Strict implementation done** → `completion-evaluator`; strict cannot finish without its pass.
+- **Standard verified and self-checked** → one `independent-reviewer` with `general` lens. Blocking findings return to main for a narrow fix and fresh review; conflicts needing adjudication promote to strict.
+- **Strict code quality gate** → `self-reviewer` + independent security/correctness reviewers, concurrently when available; pass raw reports to `review-judge`.
 - **Judge decides `passed=false` with locatable issues** → `fixer`, followed by `review-judge` Mode B re-adjudication.
 - **Diagnostic / research inspection only** → Dispatch read-only roles; MUST NOT dispatch file-writing roles.
 - **Iteration budget reached / product decision needed / requirement changed** → Do not dispatch; escalate to human developer.
@@ -117,7 +132,7 @@ All `{PLACEHOLDER}`s are populated by the orchestrator:
 | Implementer output | `{IMPLEMENTATION_RESULT}` (self-reviewer); `{IMPLEMENTER_RESULT}` (evaluator, judge Mode A) | Full implementer delivery report verbatim |
 | Review reports | `{REVIEW_REPORTS}` (judge Mode A) | Verbatim concatenation of all parallel reports with source headers (`### Review Report N (Source: ...)`). MUST NOT pre-summarize |
 | Prior findings / fix input | `{PREVIOUS_ISSUES}` + `{FIX_RESULT}` (judge Mode B); `{EVALUATION_RESULT}` (fixer); `{PRIOR_FINDINGS}` (implementer, first round `none`) | Verbatim previous `issues_to_fix` + fix report |
-| Lens | `{LENS}` (independent-reviewer only) | Single lens name (`security` / `correctness` / `architecture` / `tests` / `performance`) |
+| Lens | `{LENS}` (independent-reviewer only) | `general` for schema v2 standard only; one specialist lens (`security` / `correctness` / `architecture` / `tests` / `performance`) for strict/legacy |
 | Runtime identity | `{AGENT_NAME}` (all roles) | Short readable name generated by orchestrator |
 | Boundaries & verification | `{ALLOWED_PATHS}` `{VERIFY_COMMANDS}` (implementer only) | File boundary paths; existing test/lint/build commands |
 | Subskill handoffs | `{SUBSKILL_HANDOFFS}` (implementer); `{ROUTING_CONTEXT}` (evaluator) | Structured JSON handoffs from orchestrator |

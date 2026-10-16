@@ -1,5 +1,21 @@
 # Independent Reviewer
 
+## Profile applicability
+
+Schema v2 standard requires exactly one independent reviewer with `general` lens. Its precondition
+is main implementation, verification and diff-check at the current change revision; no evaluator
+pass is required. General covers correctness, verification sufficiency, security and every other
+relevant risk; no parallel reviewer is assumed. Return pass/need-fix with P0/P1 findings and their
+locations. Main applies narrow fixes and returns the current diff to this same reviewer. Do not
+drop unresolved findings; signal `requires_adjudication` for conflicting/unresolvable opinions
+so the orchestrator upgrades to strict. The orchestrator owns the terminal state after the review.
+
+Schema v2 strict and legacy retain specialist lens fan-out and judge synthesis below. Light does
+not dispatch this role. Every review identifies the actual change revision it inspected; stale
+reports cannot pass a current gate. Wherever the prompt below restricts the review to one lens,
+`general` means all relevant concerns; specialist exclusions and judge-only synthesis apply
+to strict/legacy fan-out.
+
 | | |
 |---|---|
 | **Role ID** | `independent-reviewer` |
@@ -11,11 +27,15 @@
 
 ## When to Dispatch
 
-- Dispatched when the implementer produces a readable change set entering the quality gate. **Dispatched concurrently with `self-reviewer`**, with no queuing or result-sharing.
-- Fan out 2–5 instances by lens to increase confidence; the larger the change or the closer to security/financial/data consistency, the wider the fan-out.
-- The review judge requires ≥2 mutually unaware reports for cross-validation; at least one independent-reviewer instance is required before judging `pass` / `need-fix`.
+- **Schema v2 standard:** after main implementation, verification and diff-check, dispatch exactly one independent reviewer with `general` lens. Do not dispatch a separate self-reviewer or review-judge. Main fixes actionable P0/P1 findings and returns the current revision to that same reviewer; findings needing adjudication require promotion to strict.
+- **Schema v2 strict and legacy code-review pipeline:** after the required completion evaluation passes, dispatch independent reviewers concurrently with `self-reviewer`, without result-sharing. Fan out by distinct specialist lens; strict requires security and correctness, and additional relevant lenses may widen the fan-out.
+- **Strict/legacy adjudication only:** forward the mutually unaware review reports to review-judge for cross-validation. The judge's report-count and synthesis requirements do not apply to standard.
 
-**Do NOT Dispatch when**: Changes are trivial copy/version/formatting without logic changes; no change set exists yet; iteration budget is exhausted and escalating to human. **MUST NOT** merge review and fix actions into the same agent.
+**Do NOT Dispatch when**: The selected schema v2 profile is light; no change set exists yet; or
+the iteration budget is exhausted and escalating to human. Trivial copy/version/formatting may
+justify selecting light when its admission checks pass, but cannot bypass standard's mandatory
+general review. Strict/legacy code work retains its required review gates regardless of size.
+**MUST NOT** merge review and fix actions into the same agent.
 
 ## Prompt Contract
 
@@ -35,7 +55,7 @@ built from scratch.
 
 ## Your Review Lens (LENS)
 {LENS}
-Dig deep only within this lens. Do not put out-of-lens issues in the report unless they reach
+For `general`, inspect every relevant concern. For specialist lenses, dig deep only within this lens. Do not put out-of-lens issues in the report unless they reach
 P0 — other lenses are covered by parallel reviewers, and duplicate coverage wastes the
 confidence signal.
 
@@ -167,14 +187,18 @@ The original legacy workflow fed the first-pass self-review report into the re-r
 | Latency | Sum of both rounds | Maximum of all concurrent rounds |
 | Overlap meaning | Zero information (second reviewer already saw first report) | **High confidence signal**: Independent reviewers catching the same issue proves it is almost certainly real |
 
-Therefore: the orchestrator **MUST NOT** inject `self-reviewer` or any peer `independent-reviewer` outputs into this role. Synthesis and cross-validation happen **exclusively** within the review judge.
+Therefore: the orchestrator **MUST NOT** inject `self-reviewer` or peer reviewer outputs into this
+role. Strict/legacy synthesis happens exclusively within the judge. Standard has one independent
+report; its initial report may accompany its own fix re-review so findings remain traceable.
 
 ## Lens Mechanism
 
-`{LENS}` is the sole dimension distinguishing N-way instances. Each instance evaluates only within its assigned lens; issues belonging to other lenses **MUST be ignored unless they reach P0**.
+`{LENS}` distinguishes strict N-way instances, which evaluate only their specialist concern
+except out-of-lens P0 findings. Standard's single `general` lens covers all relevant concerns.
 
 | Lens | Scope | Must Ignore |
 |---|---|---|
+| `general` | All relevant correctness, security, verification, architecture and performance concerns in the current diff (standard only) | Unrelated pre-existing debt and stylistic preferences |
 | `security` | Injection (SQL/XSS/command), authentication/authorization bypass, secrets/sensitive data leaks, arbitrary code execution, unauthorized data visibility | Naming, structure, minor performance tweaks |
 | `correctness` | Branch coverage, null/out-of-bounds/type mismatches, concurrency/races, swallowed exceptions, timeouts, transactions/consistency, edge cases | Architectural taste, style |
 | `architecture` | Consistency with existing patterns, module boundaries and dependency directions, appropriate abstraction (YAGNI priority), integration side effects | Single-line logic details, formatting |
@@ -202,7 +226,7 @@ Follows the prompt's Output Format: `## 📋 Review Summary` → P0/P1/P2/P3 sec
 - `{REQUESTED_CONCERNS}` **MUST** be checked off item-by-item (✅ / ⛔ / ⏭️ + rationale); cannot claim complete if ⛔ exists.
 - `## Final Recommendation` must be strictly `pass` or `need-fix`.
 
-Orchestrator Actions:
+Orchestrator Actions (strict/legacy fan-out; standard uses the general-review procedure above):
 1. Collect all parallel reports (including `self-reviewer`) and forward them **verbatim** to the review judge without pre-summarizing.
 2. Record lens → report mapping for overlap scoring: ≥2 independent reports hitting the same location + same severity → mark high-confidence.
 3. If any instance reports P0 → work item cannot complete, regardless of whether other instances report `pass`.
@@ -213,10 +237,10 @@ Orchestrator Actions:
 1. **MUST NOT** write, create, delete, or move any file; **MUST NOT** execute any command modifying worktree or git state.
 2. **MUST NOT** receive or reference peer review reports; if one appears in prompt, declare independence compromised in summary and request re-dispatch.
 3. **MUST** review only changes in the current round. Do not propose refactors for untouched code.
-4. **MUST** respect lens boundaries: out-of-lens issues can only be raised if they reach P0 severity.
+4. **MUST** respect specialist lens boundaries; general covers all relevant concerns. Specialist out-of-lens issues can only be raised at P0.
 5. **MUST** order by Security > Correctness > Performance > Maintainability > Style.
 6. If business semantics or trade-offs are ambiguous, **MUST** ask questions rather than guessing from surface syntax.
-7. **MUST NOT** declare work item passed or failed on its own — terminal authority rests with the review judge and human.
+7. **MUST NOT** set the terminal work-item state. The orchestrator applies the standard review gate; strict uses the judge and final evaluator.
 8. **MUST NOT** fabricate findings to look productive; zero P0/P1 issues is a valid and common result.
 
 ## Failure Modes

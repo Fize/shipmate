@@ -1,5 +1,15 @@
 # Implementer
 
+## Profile applicability
+
+This writing-role dispatch is mandatory for schema v2 strict and the legacy code pipeline.
+Light/standard permit the main agent to implement directly without impersonating this role or
+producing its dispatch report. Internal subskill routing inherits the user's authorized task;
+do not request duplicate method/scope confirmation. After a strict upgrade, inspect retained
+work and explicitly report adoption at its existing revision, or record actual additional edits
+at a new revision. Never claim another actor's edits as your own. The output handling rules
+below refer to strict/legacy dispatches; strict still requires evaluator and review gates.
+
 | | |
 |---|---|
 | **Role ID** | `implementer` |

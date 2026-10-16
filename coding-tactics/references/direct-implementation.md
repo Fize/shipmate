@@ -47,7 +47,7 @@ If in doubt, use a formal method. Direct Implementation is the exception, not th
 
 | #   | Rule                                                                                              | NEVER Do This                                                   |
 | --- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| 1   | **Confirm Scope First** — MUST confirm with the user that the change qualifies as direct impl     | Assuming a task is trivial without checking                     |
+| 1   | **Confirm Scope First** — establish qualification from task and repository evidence; internal workflow routing inherits existing authorization | Assuming a task is trivial without checking |
 | 2   | **Check Existing Code** — MUST search for existing similar code before writing new code            | Writing a new function when one already exists in the codebase  |
 | 3   | **Run Existing Tests** — MUST run existing tests after making changes and show the output          | Making changes without verifying nothing broke                  |
 | 4   | **Input Validation Required** — If the change handles external input, validation is NOT optional   | Accepting raw `request.body` without validation                 |
@@ -59,7 +59,13 @@ If in doubt, use a formal method. Direct Implementation is the exception, not th
 
 ### Step 1: Confirm Scope
 
-Ask the user to confirm this is a direct implementation task:
+For internal workflow routing, inspect the existing scope/acceptance and method decision, briefly
+record why Direct fits, and continue to Step 2. Do not repeat scope or method confirmation.
+Light/standard do not need a separate scope artifact. Use relevant existing tests or another
+direct verification when tests do not apply; explain the choice and report actual evidence.
+The profile's verification and review gates still apply independently of this method.
+
+For standalone use, ask only if the scope or authorization has not already been established:
 
 ```markdown
 ## Scope Confirmation

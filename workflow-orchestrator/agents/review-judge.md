@@ -1,5 +1,13 @@
 # Review Judge
 
+## Profile applicability
+
+This role is mandatory only for schema v2 strict and the legacy code-review pipeline. Standard
+uses one independent general review; unresolved/conflicting findings needing adjudication must
+upgrade to strict before dispatching this role. Light has no judge. All adjudication requirements
+below apply to strict/legacy. Mode B must inspect the actual current revision and each finding's
+disposition; prior-revision reviews remain historical, not a current pass for the edited diff.
+
 | | |
 |---|---|
 | **Role ID** | `review-judge` |

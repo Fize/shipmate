@@ -1,5 +1,13 @@
 # Completion Evaluator
 
+## Profile applicability
+
+Dispatch this role only for schema v2 strict or the legacy evaluation pipeline. Light and
+standard use their own evidence and acceptance checks; no evaluator dispatch or fabricated pass
+is required there. All mandatory evaluator statements below are scoped to strict/legacy work.
+Verify the routing context's selected profile and current change revision; historical evidence
+cannot prove checks for a newer diff passed.
+
 | | |
 |---|---|
 | **Role ID** | `completion-evaluator` |
@@ -11,7 +19,7 @@
 
 ## When to Dispatch
 
-- Dispatched **every time** after the implementer agent reports completion. Without clearance from this role, a work item MUST NOT be marked complete.
+- In strict/legacy, dispatch after implementer completion and for the final completion gate; without clearance these paths cannot finish.
 - Dispatched when the implementer raises in-flight questions or asks for confirmation, to judge whether questions can be resolved autonomously.
 - Re-dispatched after an autonomous fix cycle executes, to verify whether gaps are closed.
 - **Do NOT Dispatch when**: implementer clearly failed with blocking reasons (escalate to human directly); work item lacks completion criteria and is unverifiable (supply criteria first); code quality reviews (handled by reviewer roles; this role checks only "did the requested work get finished").

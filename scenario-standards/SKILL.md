@@ -1,6 +1,5 @@
 ---
 name: scenario-standards
-version: 1.0.0
 description: >-
   Development scenario routing and phase standards methodology. Triggers when user requests involve writing/modifying/designing/deploying code.
   Greenfield: 想做、从零、新项目、做一个、帮我搭个、写个App、创建服务、初始化、脚手架、new project、scaffold、greenfield、build from scratch.
@@ -25,28 +24,45 @@ You are NOT a general-purpose assistant while this skill is active.
 
 **Read this contract aloud to yourself before taking any action:**
 
-> I will NOT skip any scenario phase without explicitly stating WHY and getting user confirmation.
-> I will NOT implement code before completing the prerequisite phases (Requirement → Architecture → Implementation).
-> I will NOT ignore the Phase Checklists — I must verify every checkbox before moving to the next phase.
+> I will apply only phases relevant to the authorized task and record why other phases do not apply.
+> I will establish scope, acceptance and relevant impact before implementing; existing evidence can satisfy these prerequisites.
+> I will verify applicable checklist items and record concrete reasons for inapplicable ones.
 > I will NOT rationalize skipping steps because "the user asked me to just code".
-> If the user explicitly asks to skip a phase, I will state the risk and ask for confirmation.
+> I will ask when a material requirement or permission is missing, without repeating an already authorized decision.
 > I will invoke `/coding-tactics` at Implementation phases to select the appropriate development method.
 
 **These are not suggestions. Breaking any of them means you are not using this skill — you are ignoring it.**
 
 ---
 
-Match the user's intent to a scenario flow, then execute step by step. You MUST NOT skip steps within a scenario. You MUST reference the relevant checklist at each step. You MAY skip entire phases that are irrelevant to the current task.
+Match the user's intent to a scenario and apply its relevant technical checks. Under
+workflow-orchestrator schema v2, the execution profile determines mandatory steps and roles;
+the scenario determines technical concerns. Light/standard work may satisfy scope, design and
+verification checks through concise main-agent reasoning and evidence, without separate phase
+artifacts. Strict work returns structured handoffs. Inapplicable phases need a factual reason,
+not repeated user confirmation. Internal routing inherits the user's authorized scope and
+acceptance. New product decisions, irreversible actions and unresolved ambiguities still require
+the appropriate user input. Legacy ledgers retain their original protocol.
 
 ---
 
 ## Scenario Flows
 
+**How to apply the flows:** for schema v2 light/standard, the numbered lists below identify
+relevant concerns rather than mandatory separate stages or deliverables. Satisfy the applicable
+scope, impact/design, implementation and verification checks with concise main-agent reasoning
+and evidence. Combine these checks when the evidence is clear; do not create a full MVP, DDL,
+API contract, phase report or separate method-selection handoff merely because a flow lists one.
+An artifact is required when the authorized task or an applicable technical change needs it
+(for example, an actual schema migration still needs its migration plan). Load method and QA
+guidance as needed under the selected profile. Strict and legacy retain their required phases,
+structured handoffs and role gates, with irrelevant technical phases explicitly marked inapplicable.
+
 ### Scenario 1: Greenfield
 
 **Triggers**: 想做、从零、新项目、做一个、帮我搭个、写个App、创建服务、初始化、脚手架、new project、scaffold、greenfield、build from scratch
 
-**Flow**:
+**Full flow (strict/legacy; light/standard apply only relevant checks as described above)**:
 
 1. Requirement scoping → output MVP definition (MUST reference Requirement Checklist)
 2. Tech stack + DB design → output DDL + API contract (MUST reference Architecture Checklist)
@@ -64,7 +80,7 @@ Match the user's intent to a scenario flow, then execute step by step. You MUST 
 
 **Triggers**: 加功能、新增、迭代、实现、添加、支持、接入、集成、add feature、implement、integrate、enhancement
 
-**Flow**:
+**Full flow (strict/legacy; light/standard may combine scope, impact and verification reasoning)**:
 
 1. Requirement clarification → confirm scope boundary and data source
 2. Solution design → impact analysis + approach summary
@@ -204,7 +220,7 @@ Verification:      [repro command] → [expected result]
 - [ ] Comments explain WHY, never WHAT
 - [ ] NEVER output secrets/passwords — use env var placeholders
 - [ ] Curl test command provided
-- [ ] Test strategy & integration tests: invoke `/qa-suite` to determine test types, set up environment, and execute integration tests (Step 9)
+- [ ] Invoke `/qa-suite` for strict work or when strategy/setup/integration execution is needed; light/standard can run relevant existing checks directly
 - [ ] Unit testing method: invoke `/coding-tactics` (auto-selects TDD/BDD/API-First/Security-First for unit tests), or `/coding-tactics tdd` to force TDD
 
 ### Frontend Phase
@@ -216,7 +232,7 @@ Verification:      [repro command] → [expected result]
 - [ ] Split files ONLY when >200 lines
 - [ ] Extra state management library ONLY when multiple components share complex state
 - [ ] Browser verification steps provided
-- [ ] Test strategy & E2E execution: invoke `/qa-suite` for test strategy, interaction test plan (Step 6), and E2E test execution (Step 10)
+- [ ] Invoke `/qa-suite` for strict work or needed test strategy/E2E setup/execution; apply only the checks relevant to this change
 - [ ] Unit testing method: invoke `/coding-tactics` (auto-selects TDD/BDD/API-First/Security-First for unit tests), or `/coding-tactics tdd` to force TDD
 
 ### DevOps Phase

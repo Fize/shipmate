@@ -1,5 +1,41 @@
 # Workflow State Machine
 
+## Versioned applicability
+
+Schema v2 retains the five states but resolves legal edges and evidence from the selected
+[execution profile](execution-profiles.md). The tables below describe the legacy/strict full
+pipeline unless qualified here. No-version and explicit v1 ledgers keep their original checks.
+
+| V2 path | State trace | Gates |
+|---|---|---|
+| light | active → done | Current implement, verify, main diff-check and validate evidence; code edits are legal on this edge |
+| standard | active → reviewing → done | Main verification/diff-check before entry, one independent general reviewer, current passing review before done |
+| standard repair | reviewing → needs_fix → reviewing → done | Narrow main fix advances revision, repeat verification/diff-check and return to same independent reviewer |
+| review/fix escalation (standard/strict) | needs_fix → escalated | Review/fix budget exhausted or a required human decision remains; record a reason or needs_user_decision=true |
+| strict | active → reviewing → done, optional needs_fix loop | Completion-evaluator before review, self plus independent security/correctness reviews, judge, final evaluator |
+| explicit script/status record | active → done | Existing factual classification/run evidence and three-step path |
+
+V2 active → done with code is valid only for light. Standard/strict cannot use that shortcut.
+Profile upgrades use active → active, reason=profile-upgrade, reason/evidence/new complete decision,
+without resetting budgets. Only monotonic upgrades are legal. An explicit rollback from reviewing
+to active may precede an upgrade; it does not erase prior findings. Mutation revisions advance;
+verification/review snapshots for the old diff cannot pass current gates. Strict post-fix current
+evidence uses Mode B rejudge and final evaluation as described in execution-profiles.md.
+Every event records its profile/revision and explicit step evidence. A terminal state alone is
+insufficient. Standard conflicting/unresolvable findings require a strict upgrade.
+
+V2 explicitly permits `needs_fix → escalated`, including when the last permitted repair failed
+and another fix would exceed the review-fix budget. Keep the unresolved findings and exhausted
+budget evidence in the history; escalation never marks them fixed or resets counters. This is
+a v2 edge addition: legacy v1 transitions and their validation remain unchanged.
+
+Progress uses the final selected profile's actors, reviewer roster/report obligations and ordered
+current-revision evidence requirements. Prior light/standard passes cannot display strict
+implementation, verification or review as complete when the required actors or reports differ.
+Validation is pending until all applicable current gates pass. After a repair, replacement fix/
+rejudge gates are shown in execution order; superseded historical gates are skipped for the
+current revision, rather than displayed as fresh passes.
+
 A work item's entire lifecycle, from the moment a coding agent starts on it to acceptance,
 expressed as a **single-layer, 5-state machine**: `active`, `reviewing`, `needs_fix`, `done`,
 `escalated`. `done` and `escalated` are terminal.

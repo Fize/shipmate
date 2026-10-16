@@ -83,7 +83,7 @@ def summarize(path, project):
     if completed is None:
         completed = first_t(lambda ev: ev.get("to") == "done")
 
-    progress = derive_step_progress(events, wi)
+    progress = derive_step_progress(events, wi, ledger.get("schema_version", 1))
     routing = wi.get("routing")
     change_class = wi.get("change_class")
     status_only = is_status_only(events, wi)
@@ -94,6 +94,7 @@ def summarize(path, project):
             "scenario": routing.get("scenario"),
             "phase": routing.get("phase"),
             "tier": routing.get("tier"),
+            "method": routing.get("method"),
             "used": routing.get("used") or [],
         }
 
@@ -107,6 +108,12 @@ def summarize(path, project):
         "terminal": state in TERMINALS,
         "current_step": progress["current_step"],
         "steps": progress["steps"],
+        "progress_error": progress.get("error"),
+        "schema_version": ledger.get("schema_version", 1),
+        "execution_profile": wi.get("execution_profile") if ledger.get("schema_version") == 2 else None,
+        "change_revision": wi.get("change_revision") if ledger.get("schema_version") == 2 else None,
+        "profile_upgrades": [ev["profile_upgrade"] for ev in events if "profile_upgrade" in ev]
+                            if ledger.get("schema_version") == 2 else [],
         "events": events,
         "event_count": len(events),
         "started_at": started,

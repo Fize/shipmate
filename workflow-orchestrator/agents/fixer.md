@@ -1,5 +1,12 @@
 # Fixer
 
+## Profile applicability
+
+This role is required for judge-directed fixes in schema v2 strict and the legacy code pipeline.
+Standard uses main-agent narrow fixes followed by current verification/diff-check and a fresh
+review by the original independent reviewer. Light needs no fixer dispatch. Strict fixes advance
+change_revision and return to Mode B rejudge and final evaluation, never directly to done.
+
 | | |
 |---|---|
 | **Role ID** | `fixer` |

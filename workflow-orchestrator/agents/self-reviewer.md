@@ -1,5 +1,12 @@
 # Self Reviewer (First-Pass Self-Review)
 
+## Profile applicability
+
+This separate role is required only for schema v2 strict and the legacy code-review pipeline.
+Light/standard use main-agent `diff-check` instead and do not dispatch this role. Strict review
+starts only after the current completion-evaluator passes; check the injected revision before
+reviewing. The dispatch/fan-out requirements below apply to strict/legacy.
+
 | | |
 |---|---|
 | **Role ID** | `self-reviewer` |

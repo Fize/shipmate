@@ -1,13 +1,11 @@
 ---
 name: coding-tactics
-version: 1.0.0
 description: >-
   Tactical coding methodology selector and executor. Auto-selects the appropriate development
   method (TDD / BDD / API-First / Security-First / Direct Implementation) based on task context,
-  or use the specified method directly. Supports direct invocation: `/coding-tactics tdd`, `/coding-tactics bdd`, etc.
-when_to_use: >-
-  When user explicitly requests a method (e.g., "用TDD做", "先写测试", "先定义API", "BDD方式"),
-  when scenario-standards reaches Implementation phase, or when the task context implies a specific method.
+  or use the specified method directly. Use when a user requests a method, scenario-standards
+  reaches implementation, or the task context implies one. Supports direct invocation:
+  `/coding-tactics tdd`, `/coding-tactics bdd`, etc.
 allowed-tools: Read, Edit, Bash, Glob, Grep, WebFetch
 metadata:
   author: shipmate
@@ -42,6 +40,15 @@ for the current task, load its rules, and execute it faithfully.
 ## Step 0: Method Selection
 
 Determine which development method to use.
+
+**Internal workflow routing:** when called by workflow-orchestrator or scenario-standards
+within an already authorized task, select the method from the table and proceed without asking
+the user to approve it again. Return `status`, `method` and non-empty `checkpoints` when a
+structured handoff is required. Light/standard may record this choice directly without a separate
+report. Load only the selected method's relevant guidance. This internal mode also applies to
+Direct Implementation's scope step. Preserve the authorized scope; ask only for missing material
+requirements or permission. Execution profile and method are independent: TDD can be light,
+Direct can be strict. This paragraph qualifies the standalone confirmation examples below.
 
 ### If user explicitly specifies a method:
 
@@ -79,7 +86,8 @@ Based on the task context, I recommend using **[METHOD NAME]**.
 Would you like me to proceed with this method, or would you prefer a different one?
 ```
 
-Wait for user confirmation before proceeding.
+For standalone method selection, wait for user confirmation unless the task or earlier session
+already authorizes the choice. Internal workflow routing proceeds under the handoff above.
 
 ---
 

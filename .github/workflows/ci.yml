@@ -35,6 +35,9 @@ jobs:
       - name: Validate workflow orchestrator
         run: python3 workflow-orchestrator/scripts/validate_workflow.py self-check
 
+      - name: Test workflow execution profiles
+        run: python3 -m unittest discover -s workflow-orchestrator/tests -v
+
       - name: Validate QA gate suite
         run: python3 qa-suite/scripts/validate_qa_gate.py self-check
 

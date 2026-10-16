@@ -113,7 +113,7 @@ class Handler(BaseHTTPRequestHandler):
             summary = summarize(ledger_path, project) or {}
             events = ledger.get("events") if isinstance(ledger.get("events"), list) else []
             work_item = ledger.get("work_item") or {}
-            progress = derive_step_progress(events, work_item)
+            progress = derive_step_progress(events, work_item, ledger.get("schema_version", 1))
             summary["steps"] = progress["steps"]
             summary["current_step"] = progress["current_step"]
             summary["ledger"] = ledger

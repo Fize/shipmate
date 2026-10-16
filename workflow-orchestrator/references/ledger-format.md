@@ -45,7 +45,65 @@ How the scripts use this layout:
 
 ---
 
-## Top-level shape
+## Schema version 2 (new work)
+
+New ledgers put `"schema_version": 2` **only at the root** beside `work_item` and `events`.
+Unknown/non-integer versions and a second version inside work_item are rejected. No-version and
+explicit version 1 ledgers retain the legacy sections below; no automatic migration is performed.
+
+| Required work_item field | Type | Meaning |
+|---|---|---|
+| `execution_profile` | light / standard / strict | Sole v2 gate selector; routing.tier, if retained, is informational |
+| `profile_decision` | object | Final rationale, evidence and complete fixed risk checks; see [execution-profiles.md](execution-profiles.md) |
+| `change_revision` | non-negative integer | Final revision, matching the last event |
+| `routing` (code work) | object | scenario, phase, method, architecture_required, required, used, handoffs |
+
+Light/standard may record routing directly with empty required/used arrays and an empty handoffs
+object. Strict requires completed scenario-standards, coding-tactics and qa-suite handoffs;
+architecture_required additionally requires architecture-principles. Existing handoff fields
+listed below remain in force for strict, except tier is informational. routing.method is mandatory
+for v2 code work and identifies the independent implementation-method decision.
+
+Every event records execution_profile, change_revision, from and to. The first event is
+null → active at revision 0 with investigate and the initial profile_decision. An upgrade event
+records a new decision in profile_upgrade; the final work_item decision must match that history.
+Mutation revisions advance by one and never roll back. A strict implementer adopting existing
+work after promotion uses implement evidence with action=adopt at the existing revision.
+
+Every explicitly recorded step has exactly one evidence snapshot, e.g.:
+
+```json
+{"from": "active", "to": "done", "execution_profile": "light", "change_revision": 1,
+ "is_complete": true, "has_code_change": true,
+ "step": ["implement", "verify", "diff-check", "validate"],
+ "evidence": {
+   "implement": {"revision": 1, "outcome": "pass", "actor": "main", "references": ["diff.patch"]},
+   "verify": {"revision": 1, "outcome": "pass", "actor": "main", "references": ["check-output.txt"]},
+   "diff-check": {"revision": 1, "outcome": "pass", "actor": "main", "references": ["diff-review.txt"]},
+   "validate": {"revision": 1, "outcome": "pass", "actor": "main", "references": ["validator-output.txt"]}
+ }}
+```
+
+This is a terminal-event example; the ledger must also include the full work_item and initial
+investigation/decision event. References must identify actual evidence, not planned commands.
+Gate snapshots must refer to the current change revision. V2 does not infer missing step data
+from states. Light/standard must not carry evaluation/judge snapshots claiming skipped roles ran.
+
+Standard review evidence uses actor indep:general and explicit p0, p1, requires_adjudication
+booleans. Strict review collection uses actor main and additionally contains `reports` keyed by
+every reviewer in the entry roster, each with revision, outcome and non-empty references. The
+roster must include self, indep:security and indep:correctness. The judge and evaluator steps use
+their actual role identities. A failing review/judge with verified P0/P1 records outcome=fail and
+enters needs_fix; standard repairs return to the same independent reviewer, while strict repairs
+use fixer and Mode B rejudge. See [execution-profiles.md](execution-profiles.md) for all actors,
+upgrade fields and current-evidence replacement after repair.
+
+Both `check-ledger` and `check-coverage` validate the shared v2 contract, transitions, roster,
+evidence order and revision validity. Missing or unknown profile/risk evidence fails both commands.
+Profile-omitted steps appear as skipped/not applicable in progress, never completed. Failed
+evidence and evidence for earlier revisions do not appear as a current passing gate.
+
+## Legacy top-level shape (no version or version 1)
 
 ```jsonc
 {

@@ -1,5 +1,18 @@
 # Severity & Gates
 
+## Profile applicability
+
+The severity taxonomy, evidence threshold and budgets apply to all execution profiles. In schema
+v2 light, main verification/diff-check establishes acceptance without reviewer dispatch. In
+standard, the independent general reviewer inspects code and validates actionable P0/P1 findings;
+main cannot discard them, and a fresh review is required after fixes. Conflicting/unresolvable
+opinions require promotion to strict. In strict/legacy, the review judge retains authority and
+the full pipeline below. References below to judge verification therefore mean the independent
+reviewer for standard; no judge/evaluator report is required for light/standard.
+All current gate evidence identifies change_revision; edits invalidate the relevant prior pass.
+Upgrades never reset budgets. A failure must remain in history until repaired and reverified or
+explicitly escalated. P0/P1 flags cannot accompany a terminal done outcome in any v2 profile.
+
 All role agent evaluations must be comparable. Comparability requires: **the same severity taxonomy + the same gate rule + the same evidence threshold**.
 This document is the sole source of truth for these standards. If any role defines "severity" independently, the workflow loses convergence.
 
