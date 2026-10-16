@@ -9,7 +9,7 @@ description: >-
 allowed-tools: Read, Edit, Bash, Glob, Grep, WebFetch
 metadata:
   author: shipmate
-  version: "1.0.0"
+  version: "1.1.0"
   openclaw:
     emoji: "⚡"
 ---

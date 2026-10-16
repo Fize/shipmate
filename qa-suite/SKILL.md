@@ -1,6 +1,5 @@
 ---
 name: qa-suite
-version: 1.0.0
 description: >
   Testing strategy and execution for any project. Determines what test types
   apply, recommends frameworks, inspects existing test infrastructure, sets

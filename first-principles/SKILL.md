@@ -1,6 +1,5 @@
 ---
 name: first-principles
-version: 1.0.0
 description: 'Systematically learn, study, or analyze any subject from first principles and produce a structured learning document the user can read and review. Use when the user wants to understand, study, onboard to, or reverse-engineer something — not just get a surface-level explanation. Triggers include: "learn/study/understand X", "explain X from first principles", "analyze X systematically", "help me understand this codebase/library/tech", "onboard me to X", "reverse-engineer how X works", "break down X to the fundamentals". Chinese triggers: "第一性原理", "探究本质", "逆向分析", "系统学习", "怎么实现的", "底层原理". Applies to ANY domain: source code / open-source libraries, technical concepts & theories, business models & systems, skills & crafts, organizational or product designs.'
 metadata:
   author: shipmate

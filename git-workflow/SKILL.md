@@ -1,14 +1,13 @@
 ---
 name: git-workflow
-version: 1.0.0
 description: >-
   Git workflow covering branch management, normalized commits, remote sync,
   with staged operation flows. Supports git commit, push, pull, branch,
-  smart commit splitting, AI author tagging, safe branch operations.
-when_to_use: >-
-  When user needs git operations: commit, push, pull, branch management.
-  Also invoked by scenario-standards during Implementation and DevOps phases.
-  Trigger phrases: /git-workflow, git 工作流, commit, 提交, push, 推送, pull, 拉取, branch, 分支, 暂存, staged, 拆分, split
+  smart commit splitting, AI author tagging, safe branch operations. Use for
+  git operations such as commit, push, pull, and branch management, or when
+  scenario-standards reaches implementation or DevOps. Triggers include
+  `/git-workflow`, git 工作流, commit, 提交, push, 推送, pull, 拉取, branch,
+  分支, 暂存, staged, 拆分, split.
 allowed-tools: Bash(git:*)
 metadata:
   author: shipmate

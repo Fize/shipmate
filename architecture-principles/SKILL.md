@@ -1,6 +1,5 @@
 ---
 name: architecture-principles
-version: 1.0.0
 description: >-
   Architecture decision principles for technical selection, system design review, and
   build-vs-buy / self-developed-vs-open-source evaluation. Use when the user asks to choose

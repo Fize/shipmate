@@ -65,6 +65,15 @@ All skills reside directly at the root of the repository, featuring independent 
 | **[`coding-tactics`](coding-tactics/SKILL.md)** | Tactics | Micro-level coding tactics; dynamically select and execute TDD, BDD, API-First, Security-First, or Direct mode. |
 | **[`git-workflow`](git-workflow/SKILL.md)** | Tools | Staged operation flows, smart staged change splitting, Conventional Commits, and AI author attribution. |
 
+## Versioning
+
+Each skill is versioned independently through `metadata.version` in its `SKILL.md`; do not add a
+top-level `version` field. Follow SemVer for that skill: patch for fixes that do not change its
+behavior, minor for backward-compatible capability changes, and major for incompatible trigger,
+contract, or data-format changes. Bump only skills whose user-visible behavior or contract changed.
+Repository tags (`vX.Y.Z`) identify a Shipmate suite snapshot and are independent of individual
+skill versions.
+
 ---
 
 ## 💡 Core Engineering Principles
